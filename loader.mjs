@@ -40,16 +40,23 @@ async function main() {
         }
         cCtx.putImageData(frame, x, y);
         pending--;
+    }
+
+    function statusUpdate() {
         if (pending) {
-            statusEl.textContent = `Pending: ${pending}, Elapsed: ${((performance.now() - start) / 1000).toFixed(3)}`;
+            statusEl.textContent = `Pending: ${pending}, Elapsed: ${((performance.now() - start) / 1000).toFixed(3)}s`;
         } else {
             finish = performance.now();
-            statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(3)}`;
+            statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(3)}s`;
             startEl.disabled = false;
+        }
+        if (!finish) {
+            setTimeout(() => requestAnimationFrame(statusUpdate), 1 / 15 * 1000);
         }
     }
 
     async function startBench() {
+        finish = null;
         threads = Number(threadsEl.value);
         samples = Number(samplesEl.value);
 
@@ -85,6 +92,7 @@ async function main() {
         for (const w of workers) {
             w.postMessage(work.shift());
         }
+        statusUpdate();
         start = performance.now();
     }
 }
