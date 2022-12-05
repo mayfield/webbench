@@ -36,7 +36,7 @@ async function main() {
             statusEl.textContent = `Pending: ${pending}, Elapsed: ${((performance.now() - start) / 1000).toFixed(3)}`;
         } else {
             finish = performance.now();
-            statusEl.textContent = `Completed in: ${finish - start}`;
+            statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(3)}`;
         }
     }
 
