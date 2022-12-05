@@ -2,8 +2,8 @@
 async function main() {
     const width = 1024;
     const height = 768;
-    const bWidth = 64;
-    const bHeight = 48;
+    const bWidth = 48;
+    const bHeight = 32;
     const statusEl = document.querySelector('.status');
     const canvas = document.querySelector('canvas');
     const cCtx = canvas.getContext('2d');
@@ -13,10 +13,18 @@ async function main() {
     const work = [];
     let pending = 0;
     const workers = [];
-    let threads = 2;
-    let samples = 10;
+    let threads = navigator.hardwareConcurrency || 2;
+    let samples = 100;
 
-    document.querySelector('input[name="start"]').addEventListener('click', ev => startBench());
+    const threadsEl = document.querySelector('input[name="threads"]');
+    threadsEl.value = threads;
+    const samplesEl = document.querySelector('input[name="samples"]');
+    samplesEl.value = samples;
+    const startEl = document.querySelector('input[name="start"]');
+    startEl.addEventListener('click', ev => {
+        startEl.disabled = true;
+        startBench()
+    });
 
     function onWorkerBlock(worker, {x, y, width, height, block}) {
         if (work.length) {
@@ -37,12 +45,13 @@ async function main() {
         } else {
             finish = performance.now();
             statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(3)}`;
+            startEl.disabled = false;
         }
     }
 
     async function startBench() {
-        threads = Number(document.querySelector('input[name="threads"]').value);
-        samples = Number(document.querySelector('input[name="samples"]').value);
+        threads = Number(threadsEl.value);
+        samples = Number(samplesEl.value);
 
         while (workers.length < threads) {
             const w = new Worker('worker.js');
