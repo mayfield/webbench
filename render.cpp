@@ -230,7 +230,9 @@ Vec radiance_recursive(const Ray &r, int depth, unsigned short *Xi) {
 
 static int imgWidth = 1024;
 static int imgHeight = 768;
-static Ray cam(Vec(50, 52, 295.6), Vec(0, -0.042612, -1).norm()); // cam pos, dir
+// XXX Using the original cam y of 52 renders a band of white with clang but not gcc.
+// Why?
+static Ray cam(Vec(50, 50, 295.6), Vec(0, -0.042612, -1).norm()); // cam pos, dir
 static Vec cx = Vec(imgWidth * 0.5135 / imgHeight);
 static Vec cy = (cx % cam.d).norm() * 0.5135;
 
@@ -244,12 +246,11 @@ unsigned char *renderBlock(int samples, int xStart, int yStart, int width, int h
         unsigned short Xi[3] = {0, 0, (unsigned short) (y * y * y)};
         for (int x = xStart, xi = 0; x < xStart + width; x++, xi++) {
             int ii = yi * width + xi;
-            for (int sy = 0; sy < 2; sy++) {
-                // 2x2 subpixel rows
+            for (int sy = 0; sy < 2; sy++) { // 2x2 subpixel rows
                 for (int sx = 0; sx < 2; sx++, r = Vec()) { // 2x2 subpixel cols
                     for (int s = 0; s < samples; s++) {
-                        double r1 = 2 * erand48(Xi), dx = r1 < 1 ? sqrt(r1) - 1 : 1 - sqrt(2-r1);
-                        double r2 = 2 * erand48(Xi), dy = r2 < 1 ? sqrt(r2) - 1 : 1 - sqrt(2-r2);
+                        double r1 = 2 * erand48(Xi), dx = r1 < 1 ? sqrt(r1) - 1 : 1 - sqrt(2 - r1);
+                        double r2 = 2 * erand48(Xi), dy = r2 < 1 ? sqrt(r2) - 1 : 1 - sqrt(2 - r2);
                         Vec d = cx * (((sx + 0.5 + dx) / 2 + x) / imgWidth - 0.5) +
                                 cy * (((sy + 0.5 + dy) / 2 + y) / imgHeight - 0.5) + cam.d;
                         r = r + radiance_iterative(Ray(cam.o + d * 140, d.norm()), 0, Xi) * (1.0 / samples);
@@ -259,6 +260,7 @@ unsigned char *renderBlock(int samples, int xStart, int yStart, int width, int h
             }
         }
     }
+
     unsigned char *bmp = (unsigned char*) malloc(width * height * 3);
     int c = 0;
     for (int i = 0; i < width * height; i++) {

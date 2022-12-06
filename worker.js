@@ -33,8 +33,9 @@ async function _worker() {
         const {samples, x, y, width, height} = workQueue.shift();
         let retries = 0;
         let offt;
-        while (retries++ < 5) {
-            let s = retries > 1 ? samples * (0.90 + (Math.random() * 0.20)) | 0 : samples;
+        // Chrome and Safari have extremely shallow recursion limits so we need this. :(
+        while (retries++ < 8) {
+            let s = retries > 1 ? samples * (0.80 + (Math.random() * 0.40)) | 0 : samples;
             try {
                 offt = mod._renderBlock(s, x, y, width, height);
                 break;
@@ -46,7 +47,8 @@ async function _worker() {
         if (retries > 1) {
             console.error(retries, x, y);
         }
-        const block = mod.HEAPU8.slice(offt, offt + width * height * 3);
+        const size = width * height * 3;
+        const block = offt !== undefined ? mod.HEAPU8.slice(offt, offt + size) : new Uint8array(size);
         postMessage({x, y, width, height, block});
         await sleep(0);
     }

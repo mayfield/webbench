@@ -91,8 +91,10 @@ Vec radiance(const Ray &r, int depth, unsigned short *Xi) {
 
 int main(int argc, char *argv[]) {
     unsigned short w = 1024, h = 768;
-    int samps = argc == 2 ? atoi(argv[1]) : 1; // # samples
-    Ray cam(Vec(50, 52, 295.6), Vec(0, -0.042612, -1).norm()); // cam pos, dir
+    int samps = argc == 2 ? atoi(argv[1]) : 4; // # samples
+    // XXX The original y of 52 for cam render several rows of white on clang
+    // but not on gcc.  What the heck is going on here?
+    Ray cam(Vec(50, 50, 295.6), Vec(0, -0.042612, -1).norm()); // cam pos, dir
     Vec cx = Vec(w * 0.5135 / h);
     Vec cy = (cx % cam.d).norm() * 0.5135;
     Vec r;

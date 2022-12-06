@@ -2,19 +2,17 @@
 async function main() {
     const width = 1024;
     const height = 768;
-    //const bWidth = 32;
-    //const bHeight = 24;
-    const bWidth = 1024;
-    const bHeight = 768;
+    const bWidth = 32;
+    const bHeight = 24;
     const statusEl = document.querySelector('.status');
     const canvas = document.querySelector('canvas');
     const cCtx = canvas.getContext('2d');
     const frame = cCtx.createImageData(width, height);
+    const work = [];
+    const workers = [];
     let start;
     let finish;
-    const work = [];
     let pending = 0;
-    const workers = [];
     let threads = navigator.hardwareConcurrency || 2;
     let samples = 10;
 
