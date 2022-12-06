@@ -4,24 +4,6 @@
 #include <stdio.h>
 
 
-/* Quake's fast inverse square (64bit version) for fun */
-float Q_rsqrt64(double number) {
-	long long i;
-	double x2, y;
-	const double threehalfs = 1.5F;
-
-	x2 = number * 0.5F;
-	y  = number;
-	i  = *(long long *) &y;                 // evil floating point bit level hacking
-	i  = 0x5fe6eb50c7b537a9 - (i >> 1);     // what the fuck? 
-	y  = *(double *) &i;
-	y  = y * (threehalfs - (x2 * y * y));   // 1st iteration
-//	y  = y * (threehalfs - (x2 * y * y));   // 2nd iteration, this can be removed
-
-	return y;
-}
-
-
 struct Vec {
     double x, y, z; // position, also color (r,g,b)
     Vec(double x_=0, double y_=0, double z_=0) {
@@ -235,6 +217,8 @@ static int imgHeight = 768;
 static Ray cam(Vec(50, 50, 295.6), Vec(0, -0.042612, -1).norm()); // cam pos, dir
 static Vec cx = Vec(imgWidth * 0.5135 / imgHeight);
 static Vec cy = (cx % cam.d).norm() * 0.5135;
+static unsigned char *rbBMP = NULL;
+static size_t rbSize = 0;
 
 
 extern "C" {
@@ -261,14 +245,21 @@ unsigned char *renderBlock(int samples, int xStart, int yStart, int width, int h
         }
     }
 
-    unsigned char *bmp = (unsigned char*) malloc(width * height * 3);
+    int size = width * height * 3;
+    if (rbSize < size) {
+        rbBMP = (unsigned char*) realloc(rbBMP, size);
+        if (rbBMP == NULL) {
+            return NULL;
+        }
+        rbSize = size;
+    }
     int c = 0;
     for (int i = 0; i < width * height; i++) {
-        bmp[c++] = toByte(block[i].x);
-        bmp[c++] = toByte(block[i].y);
-        bmp[c++] = toByte(block[i].z);
+        rbBMP[c++] = toByte(block[i].x);
+        rbBMP[c++] = toByte(block[i].y);
+        rbBMP[c++] = toByte(block[i].z);
     }
-    return bmp;
+    return rbBMP;
 }
 
 } // extern C

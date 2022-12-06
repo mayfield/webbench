@@ -56,7 +56,6 @@ async function main() {
     }
 
     async function startBench() {
-        finish = null;
         threads = Number(threadsEl.value);
         samples = Number(samplesEl.value);
 
@@ -79,7 +78,6 @@ async function main() {
             w.terminate();
         }
 
-
         work.length = 0;
         for (let y = 0; y < height; y += bHeight) {
             for (let x = 0; x < width; x += bWidth) {
@@ -88,7 +86,29 @@ async function main() {
             }
         }
 
+        const drawStyle = document.querySelector('select[name="drawstyle"]').value;
+        if (drawStyle === 'circleout' || drawStyle === 'circlein') {
+            work.sort((a, b) => {
+                const aDist = (a.x - (width / 2)) ** 2 + (a.y - (height / 2)) ** 2;
+                const bDist = (b.x - (width / 2)) ** 2 + (b.y - (height / 2)) ** 2;
+                return drawStyle === 'circleout' ? aDist - bDist : bDist - aDist;
+            });
+        } else if (drawStyle === 'random') {
+            for (let i = 0; i < work.length; i++) {
+                const idx = Math.random() * work.length | 0;
+                [work[idx], work[i]] = [work[i], work[idx]];
+            }
+        } else if (drawStyle === 'bottomup') {
+            work.reverse();
+        } else if (drawStyle === 'ltr' || drawStyle === 'rtl') {
+            work.sort((a, b) => drawStyle === 'ltr' ? a.x - b.x : b.x - a.x);
+        }
+
         cCtx.clearRect(0, 0, canvas.width, canvas.height);
+
+        finish = null;
+        start = performance.now();
+        statusUpdate();
         for (const w of workers) {
             const ws = work.shift();
             if (!ws) {
@@ -96,12 +116,8 @@ async function main() {
             }
             w.postMessage(ws);
         }
-        statusUpdate();
-        start = performance.now();
     }
 }
 
-addEventListener('DOMContentLoaded', main);
 document.documentElement.style.setProperty('--device-pixel-ratio', devicePixelRatio);
-
-
+main();
