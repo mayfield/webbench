@@ -2,8 +2,10 @@
 async function main() {
     const width = 1024;
     const height = 768;
-    const bWidth = 48;
-    const bHeight = 32;
+    //const bWidth = 32;
+    //const bHeight = 24;
+    const bWidth = 1024;
+    const bHeight = 768;
     const statusEl = document.querySelector('.status');
     const canvas = document.querySelector('canvas');
     const cCtx = canvas.getContext('2d');
@@ -14,7 +16,7 @@ async function main() {
     let pending = 0;
     const workers = [];
     let threads = navigator.hardwareConcurrency || 2;
-    let samples = 100;
+    let samples = 10;
 
     const threadsEl = document.querySelector('input[name="threads"]');
     threadsEl.value = threads;
@@ -90,7 +92,11 @@ async function main() {
 
         cCtx.clearRect(0, 0, canvas.width, canvas.height);
         for (const w of workers) {
-            w.postMessage(work.shift());
+            const ws = work.shift();
+            if (!ws) {
+                break;
+            }
+            w.postMessage(ws);
         }
         statusUpdate();
         start = performance.now();
@@ -98,3 +104,6 @@ async function main() {
 }
 
 addEventListener('DOMContentLoaded', main);
+document.documentElement.style.setProperty('--device-pixel-ratio', devicePixelRatio);
+
+

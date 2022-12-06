@@ -1,37 +1,74 @@
+<!DOCTYPE html>
 <html>
     <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+        <title>WASM CPU Benchmark</title>
+
         <script src="./render.js"></script>
         <script src="./loader.mjs"></script>
+
         <style>
+            html {
+                font-family: sans-serif;
+            }
+
+            a {
+                color: gold;
+            }
+
             body {
                 padding: 1em;
                 background: black;
                 color: white;
-
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
             }
 
             canvas {
                 margin: 1em 0;
                 border: 4px solid #3399cc;
-                width: 700px;
+                width: min(100%, calc(1024px / var(--device-pixel-ratio)));
+                background-image: linear-gradient(45deg, purple, gold);
             }
 
             input, label {
-                margin: 0.4em;
+                margin: 0.2em 0;
             }
 
             input {
                 padding: 0.2em 0.4em;
                 border-radius: 0.3em;
             }
+            input[type="number"] {
+                width: 6ch;
+            }
+            input[type="button"] {
+                margin-top: 0.6em;
+                padding: 0.5em 1em;
+            }
+
+            .status {
+                margin-top: 0.6em;
+                font-variant: tabular-nums;
+                font-weight: 600;
+            }
         </style>
     </head>
     <body>
-        <h4>Justin's WASM Web benchmark using a WebWorker threaded version of smallpt</h4>
-        <label>Samples per pixel: <input name="samples" value="10" type="number" min="1"/></label><br/>
-        <label>Threads: <input name="threads" value="2" type="number" min="1"/></label><br/>
+        <h4>Justin's WASM Web benchmark using a WebWorker threaded version
+            of <a href="https://www.kevinbeason.com/smallpt">smallpt</a> <a href="https://www.kevinbeason.com/smallpt/forward.cpp">(non-recursive patch)</a></h4>
+        <label>Samples per pixel: <input name="samples" value="10" type="number" min="1"/></label>
+        <label>Threads: <input name="threads" value="2" type="number" min="1"/></label>
         <input name="start" type="button" value="Start Benchmark">
         <div class="status"></div>
         <canvas width="1024" height="768"></canvas>
+        <footer>
+            <a href="https://github.com/mayfield/webbench">GitHub Source</a> |
+            <a href="https://mayfield.github.io/webbench">Official Site</a>
+        </footer>
     </body>
 </html>
