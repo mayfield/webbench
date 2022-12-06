@@ -14,7 +14,7 @@ async function main() {
     let finish;
     let pending = 0;
     let threads = navigator.hardwareConcurrency || 2;
-    let samples = 10;
+    let samples = 100;
 
     const threadsEl = document.querySelector('input[name="threads"]');
     threadsEl.value = threads;

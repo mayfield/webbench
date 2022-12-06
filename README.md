@@ -22,6 +22,7 @@ Webbench is a Clang/Emscripten compiled version of the non-recursive "Monte Carl
 
 On Firefox, my system is within about 1% of the native performance of the same code (using openmp for threading).  Pretty impressive if you ask me.  As noted below Chrome is the worst performer by a significant margin but I'd love to see this change over time.
 
+<img src="results-sample.png"/>
 
 Open Questions and Observations
 --------

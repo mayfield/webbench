@@ -1,4 +1,4 @@
-all: wasm
+all: wasm references
 
 wasm:
 	em++ -Wall -O3 \
@@ -10,8 +10,8 @@ wasm:
 		render.cpp -o render.js
 
 references:
-	g++ -Wall -O3 references/smallpt.cpp -o smallpt-gcc
-	clang++ -Wall -O3 references/smallpt.cpp -o smallpt-clang
+	g++ -Wall -O3 -fopenmp references/smallpt.cpp -o smallpt-gcc
+	clang++ -Wall -O3 -fopenmp references/smallpt.cpp -o smallpt-clang
 
 
-.PHONY: references wasm all
+.PHONY: references wasm
