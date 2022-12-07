@@ -1,3 +1,4 @@
 image.ppm
 *.swp
 smallpt-*
+.DS_Store

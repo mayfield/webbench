@@ -1,11 +1,3 @@
-const ext = browser || chrome;
-
-let info;
-
-(browser || chrome).system.cpu.getInfo().then(x => {
-    const script = document.createElement('script');
-    script.innerHTML = `
-        window.webBenchCpuInfo = ${JSON.stringify(info)};
-    `;
-    document.documentElement.append(script);
-});
+const ext = self.browser || self.chrome;
+ext.runtime.onMessage.addListener(msg => window.postMessage(msg));
+ext.runtime.sendMessage('getInfo');

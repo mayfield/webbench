@@ -1,4 +1,9 @@
 
+addEventListener('message', ev => {
+    console.log('adsf', ev.data);
+});
+
+
 async function main() {
     const width = 1024;
     const height = 768;

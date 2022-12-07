@@ -2,9 +2,18 @@
     "manifest_version": 3,
     "name": "Webbench CPU Info Helper",
     "version": "4.2.0",
-    "host_permissions": ["https://mayfield.github.io/webbench"],
+    "permissions": [
+        "system.cpu",
+        "system.memory"
+    ],
+    "background": {
+        "service_worker": "src/sw.js"
+    },
     "content_scripts": [{
-        "matches": ["https://mayfield.github.io/webbench/*"],
+        "matches": [
+            "https://mayfield.github.io/webbench/*",
+            "http://jm:8000/*"
+        ],
         "run_at": "document_start",
         "js": ["src/getcpuinfo.js"]
     }]
