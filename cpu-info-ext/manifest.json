@@ -12,7 +12,7 @@
     "content_scripts": [{
         "matches": [
             "https://mayfield.github.io/webbench/*",
-            "http://jm:8000/*"
+            "*://*/*"
         ],
         "run_at": "document_start",
         "js": ["src/getcpuinfo.js"]

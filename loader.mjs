@@ -20,6 +20,11 @@ async function main() {
     let pending = 0;
     let threads = navigator.hardwareConcurrency || 2;
     let samples = 100;
+    let sysInfo;
+
+    try {
+        sysInfo = JSON.parse(document.querySelector('#sys-info-json').innerHTML);
+    } catch(e) { }
 
     const threadsEl = document.querySelector('input[name="threads"]');
     threadsEl.value = threads;
