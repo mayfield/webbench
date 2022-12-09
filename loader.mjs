@@ -1,4 +1,4 @@
-const officialSamples = 20;
+const officialSamples = 200;
 const officialDrawStyle = 'circleout';
 
 async function main() {
