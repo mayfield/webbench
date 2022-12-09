@@ -7,6 +7,7 @@ async function main() {
     const minScore = results.at(-1).score;
     document.querySelector('.results tbody').innerHTML = results.map((x, i) => {
         const pct = (x.score - minScore) / (maxScore - minScore);
+        const score = Number(x.score.toFixed(1));
         return `
             <tr class="${x.systemId === systemId ? 'ours' : ''}">
                 <td class="">${(i + 1).toLocaleString()}</td>
@@ -15,7 +16,7 @@ async function main() {
                 <td class="browser">${x.browser || ''}</td>
                 <td class="platform">${x.platform || ''}</td>
                 <td class="notes">${x.notes || ''}</td>
-                <td class="score"><progress max="1" value="${pct}"></progress> ${x.score.toLocaleString()}</td>
+                <td class="score"><progress max="1" value="${pct}"></progress> ${score.toLocaleString()}</td>
             </tr>
         `;
     }).join('\n');

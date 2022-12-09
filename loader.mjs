@@ -1,4 +1,4 @@
-const officialSamples = 200;
+const officialSamples = 20;
 const officialDrawStyle = 'circleout';
 
 async function main() {
@@ -16,9 +16,9 @@ async function main() {
     let start;
     let finish;
     let pending = 0;
+    let elapsed = 0;
     let threads = navigator.hardwareConcurrency || 2;
     let samples = officialSamples;
-    let score;
     let time;
     let official = true;
     let systemId = localStorage.getItem("system-id");
@@ -75,7 +75,7 @@ async function main() {
                 notes,
                 cores,
                 threads,
-                score,
+                score: comps / 1000000 / elapsed,
                 time,
                 samples,
                 ...userAgent,
@@ -101,8 +101,9 @@ async function main() {
     }
 
     function statusUpdate() {
-        const elapsed = (performance.now() - start) / 1000;
-        const mradsStr = `MRads/sec: ${Math.round(comps / 1000000 / elapsed).toLocaleString()}`;
+        elapsed = (performance.now() - start) / 1000;
+        const mradps = Number((comps / 1000000 / elapsed).toFixed(2));
+        const mradsStr = `MRad/s: ${mradps.toLocaleString()}`;
         if (pending) {
             statusEl.textContent = `Elapsed: ${elapsed.toFixed(1)}s, ${mradsStr}`;
         } else {
@@ -110,9 +111,9 @@ async function main() {
             startEl.disabled = false;
             if (official) {
                 time = finish - start;
-                statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(1)}s, ${mradsStr}, {score.toLocaleString()}`;
+                statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(1)}s, ${mradsStr}`;
                 const dialog = document.querySelector('dialog');
-                dialog.querySelector('.score').textContent = score.toLocaleString();
+                dialog.querySelector('.score').textContent = Number((comps / 1000000 / elapsed).toFixed(2)).toLocaleString();
                 dialog.querySelector('[name="cpu"]').value = localStorage.getItem("last-cpu");
                 dialog.querySelector('[name="notes"]').value = localStorage.getItem("last-notes");
                 dialog.querySelector('[name="cores"]').value = localStorage.getItem("last-cores") || navigator.hardwareConcurrency || 1;
