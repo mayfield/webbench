@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 
 struct Vec {
@@ -86,7 +87,7 @@ inline bool intersect(const Ray &r, double &t, int &id) {
 }
 
 
-Vec radiance_iterative(const Ray &r_, int depth_, unsigned short *Xi){
+Vec radiance_iterative(const Ray &r_, int depth_, unsigned short *Xi, unsigned int *count){
     double t; // distance to intersection
     int id = 0; // id of intersected object
     Ray r = r_;
@@ -94,6 +95,7 @@ Vec radiance_iterative(const Ray &r_, int depth_, unsigned short *Xi){
     Vec cl(0, 0, 0); // accumulated color
     Vec cf(1, 1, 1); // accumulated reflectance
     while (1) {
+        (*count)++;
         if (!intersect(r, t, id)) {
             return cl; // if miss, return black
         }
@@ -161,7 +163,6 @@ Vec radiance_iterative(const Ray &r_, int depth_, unsigned short *Xi){
             cf = cf * TP;
             r = Ray(x, tdir);
         }
-        continue;
     }
 }
 
@@ -226,6 +227,7 @@ extern "C" {
 unsigned char *renderBlock(int samples, int xStart, int yStart, int width, int height) {
     Vec r;
     Vec *block = new Vec[width * height];
+    unsigned int count = 0;
     for (int y = imgHeight - yStart - 1, yi = 0; y >= imgHeight - yStart - 1 - height; y--, yi++) {
         unsigned short Xi[3] = {0, 0, (unsigned short) (y * y * y)};
         for (int x = xStart, xi = 0; x < xStart + width; x++, xi++) {
@@ -237,7 +239,7 @@ unsigned char *renderBlock(int samples, int xStart, int yStart, int width, int h
                         double r2 = 2 * erand48(Xi), dy = r2 < 1 ? sqrt(r2) - 1 : 1 - sqrt(2 - r2);
                         Vec d = cx * (((sx + 0.5 + dx) / 2 + x) / imgWidth - 0.5) +
                                 cy * (((sy + 0.5 + dy) / 2 + y) / imgHeight - 0.5) + cam.d;
-                        r = r + radiance_iterative(Ray(cam.o + d * 140, d.norm()), 0, Xi) * (1.0 / samples);
+                        r = r + radiance_iterative(Ray(cam.o + d * 140, d.norm()), 0, Xi, &count) * (1.0 / samples);
                     } // Camera rays are pushed ^^^^^ forward to start in interior
                     block[ii] = block[ii] + Vec(clamp(r.x), clamp(r.y), clamp(r.z)) * 0.25;
                 }
@@ -245,7 +247,7 @@ unsigned char *renderBlock(int samples, int xStart, int yStart, int width, int h
         }
     }
 
-    int size = width * height * 3;
+    int size = sizeof(int) + width * height * 3;
     if (rbSize < size) {
         rbBMP = (unsigned char*) realloc(rbBMP, size);
         if (rbBMP == NULL) {
@@ -253,7 +255,8 @@ unsigned char *renderBlock(int samples, int xStart, int yStart, int width, int h
         }
         rbSize = size;
     }
-    int c = 0;
+    memcpy(rbBMP, &count, sizeof(int));
+    int c = sizeof(int);
     for (int i = 0; i < width * height; i++) {
         rbBMP[c++] = toByte(block[i].x);
         rbBMP[c++] = toByte(block[i].y);

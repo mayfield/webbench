@@ -1,4 +1,4 @@
-const officialSamples = 250;
+const officialSamples = 200;
 const officialDrawStyle = 'circleout';
 
 async function main() {
@@ -12,6 +12,7 @@ async function main() {
     const frame = cCtx.createImageData(width, height);
     const work = [];
     const workers = [];
+    let comps = 0;
     let start;
     let finish;
     let pending = 0;
@@ -82,10 +83,11 @@ async function main() {
         });
     });
 
-    function onWorkerBlock(worker, {x, y, width, height, block}) {
+    function onWorkerBlock(worker, {x, y, width, height, block, count}) {
         if (work.length) {
             worker.postMessage(work.shift());
         }
+        comps += count;
         const frame = cCtx.createImageData(width, height);
         let c = 0;
         for (let i = 0; i < block.length; i += 3) {
@@ -100,7 +102,8 @@ async function main() {
 
     function statusUpdate() {
         if (pending) {
-            statusEl.textContent = `Pending: ${pending}, Elapsed: ${((performance.now() - start) / 1000).toFixed(1)}s`;
+            const elapsed = (performance.now() - start) / 1000;
+            statusEl.textContent = `Pending: ${pending}, Elapsed: ${elapsed.toFixed(1)}s ${Math.round(comps / elapsed).toLocaleString()}`;
         } else {
             finish = performance.now();
             startEl.disabled = false;
@@ -124,10 +127,12 @@ async function main() {
     }
 
     async function startBench() {
+        comps = 0;
+        pending = 0;
         threads = Number(threadsEl.value);
         samples = Number(samplesEl.value);
         while (workers.length < threads) {
-            const w = new Worker('worker.js');
+            const w = new Worker('worker.js?_dc=' + Math.random());
             await new Promise((resolve, reject) => {
                 w.addEventListener('message', ev => {
                     if (ev.data !== 'ready') {

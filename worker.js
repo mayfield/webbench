@@ -48,9 +48,11 @@ async function _worker() {
                 await sleep(1);
             }
         }
+        const dv = new DataView(mod.HEAPU8.buffer, offt, 4);
+        const count = dv.getUint32(0, /*le*/ true); // WASM is always LE
         const size = width * height * 3;
-        const block = offt ? mod.HEAPU8.slice(offt, offt + size) :
+        const block = offt ? mod.HEAPU8.slice(offt + 4, offt + 4 + size) :
             new Uint8Array(size).map(() => Math.random() * 256);
-        postMessage({x, y, width, height, block});
+        postMessage({x, y, width, height, block, count});
     }
 }
