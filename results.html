@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+        <title>WASM CPU Benchmark - Results</title>
+
+        <script type="module" src="./results.mjs"></script>
+
+        <style>
+            html {
+                font-family: sans-serif;
+            }
+
+            a {
+                color: gold;
+            }
+
+            body {
+                padding: 1em;
+                background: black;
+                color: white;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            table.results {
+                margin: 0 1em 2em 1em;
+                background: #222;
+                padding: 1em;
+                border-radius: 0.3em;
+                border-collapse: collapse;
+                overflow: hidden;
+            }
+
+            table.results thead {
+                background: gold;
+                color: black;
+            }
+
+            table.results th, td {
+                padding: 0.2em 0.5em;
+                text-align: left;
+            }
+        </style>
+    </head>
+    <body>
+        <h4>Justin's WASM Web benchmark using a WebWorker threaded version
+            of <a href="https://www.kevinbeason.com/smallpt">smallpt</a> <a href="https://www.kevinbeason.com/smallpt/forward.cpp">(non-recursive patch)</a></h4>
+        <h1>Results...</h1>
+        <table class="results">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>CPU</th>
+                    <th>Cores</th>
+                    <th>Browser</th>
+                    <th>Platform</th>
+                    <th>Notes</th>
+                    <th>Score</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <footer>
+            <a href="https://github.com/mayfield/webbench">GitHub Source</a> |
+            <a href="https://mayfield.github.io/webbench">Official Site</a> |
+            <a href="results.html">Results</a>
+        </footer>
+    </body>
+</html>

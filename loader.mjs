@@ -1,8 +1,5 @@
-
-addEventListener('message', ev => {
-    console.log('adsf', ev.data);
-});
-
+const officialSamples = 250;
+const officialDrawStyle = 'circleout';
 
 async function main() {
     const width = 1024;
@@ -19,16 +16,70 @@ async function main() {
     let finish;
     let pending = 0;
     let threads = navigator.hardwareConcurrency || 2;
-    let samples = 100;
-
+    let samples = officialSamples;
+    let score;
+    let time;
+    let official = true;
+    let systemId = localStorage.getItem("system-id");
+    if (!systemId) {
+        if (self.crypto && self.crypto.randomUUID) {
+            systemId = crypto.randomUUID();
+        } else {
+            systemId = (Math.random() * (1<<30) | 0).toString(16) +
+                (Math.random() * (1<<30) | 0).toString(16);
+        }
+        localStorage.setItem('system-id', systemId);
+    }
     const threadsEl = document.querySelector('input[name="threads"]');
     threadsEl.value = threads;
     const samplesEl = document.querySelector('input[name="samples"]');
     samplesEl.value = samples;
     const startEl = document.querySelector('input[name="start"]');
+    const drawStyleEl = document.querySelector('select[name="drawstyle"]');
     startEl.addEventListener('click', ev => {
         startEl.disabled = true;
         startBench()
+    });
+    const officialEl = document.querySelector('input[name="official"]');
+    officialEl.addEventListener('input', ev => {
+        official = ev.currentTarget.checked;
+        if (official) {
+            samplesEl.value = officialSamples;
+            drawStyleEl.value = officialDrawStyle;
+        }
+        document.querySelector('.playground').classList.toggle('disabled', official);
+    });
+    const dialog = document.querySelector('dialog');
+    dialog.addEventListener('close', async ev => {
+        if (dialog.returnValue === 'cancel') {
+            return;
+        }
+        const cpu = dialog.querySelector('[name="cpu"]').value;
+        const notes = dialog.querySelector('[name="notes"]').value;
+        const cores = dialog.querySelector('[name="cores"]').value;
+        localStorage.setItem("last-cpu", cpu);
+        localStorage.setItem("last-notes", notes);
+        localStorage.setItem("last-cores", cores);
+        let userAgent = {platform: '', browser: ''};
+        try {
+            userAgent = getAgentInfo();
+        } catch(e) {
+            console.error("Failed to get user agent info:", e);
+        }
+        await fetch('https://23t1sp28xe.execute-api.us-east-1.amazonaws.com/Release', {
+            method: 'POST',
+            body: JSON.stringify({
+                systemId,
+                cpu,
+                notes,
+                cores,
+                threads,
+                score,
+                time,
+                samples,
+                ...userAgent,
+            })
+        });
     });
 
     function onWorkerBlock(worker, {x, y, width, height, block}) {
@@ -49,21 +100,32 @@ async function main() {
 
     function statusUpdate() {
         if (pending) {
-            statusEl.textContent = `Pending: ${pending}, Elapsed: ${((performance.now() - start) / 1000).toFixed(3)}s`;
+            statusEl.textContent = `Pending: ${pending}, Elapsed: ${((performance.now() - start) / 1000).toFixed(1)}s`;
         } else {
             finish = performance.now();
-            statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(3)}s`;
             startEl.disabled = false;
+            if (official) {
+                time = finish - start;
+                score = Math.round(1000000000 / time);
+                statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(1)}s, Official Score: ${score.toLocaleString()}`;
+                const dialog = document.querySelector('dialog');
+                dialog.querySelector('.score').textContent = score.toLocaleString();
+                dialog.querySelector('[name="cpu"]').value = localStorage.getItem("last-cpu");
+                dialog.querySelector('[name="notes"]').value = localStorage.getItem("last-notes");
+                dialog.querySelector('[name="cores"]').value = localStorage.getItem("last-cores") || navigator.hardwareConcurrency || 1;
+                dialog.showModal();
+            } else {
+                statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(1)}s`;
+            }
         }
         if (!finish) {
-            setTimeout(() => requestAnimationFrame(statusUpdate), 1 / 15 * 1000);
+            setTimeout(() => requestAnimationFrame(statusUpdate), 1 / 10 * 1000);
         }
     }
 
     async function startBench() {
         threads = Number(threadsEl.value);
         samples = Number(samplesEl.value);
-
         while (workers.length < threads) {
             const w = new Worker('worker.js');
             await new Promise((resolve, reject) => {
@@ -82,7 +144,6 @@ async function main() {
             const w = workers.shift();
             w.terminate();
         }
-
         work.length = 0;
         for (let y = 0; y < height; y += bHeight) {
             for (let x = 0; x < width; x += bWidth) {
@@ -90,8 +151,7 @@ async function main() {
                 pending++;
             }
         }
-
-        const drawStyle = document.querySelector('select[name="drawstyle"]').value;
+        const drawStyle = drawStyleEl.value;
         if (drawStyle === 'circleout' || drawStyle === 'circlein') {
             work.sort((a, b) => {
                 const aDist = (a.x - (width / 2)) ** 2 + (a.y - (height / 2)) ** 2;
@@ -108,9 +168,7 @@ async function main() {
         } else if (drawStyle === 'ltr' || drawStyle === 'rtl') {
             work.sort((a, b) => drawStyle === 'ltr' ? a.x - b.x : b.x - a.x);
         }
-
         cCtx.clearRect(0, 0, canvas.width, canvas.height);
-
         finish = null;
         start = performance.now();
         statusUpdate();
@@ -123,6 +181,39 @@ async function main() {
         }
     }
 }
+
+
+function getAgentInfo() {
+    if (navigator.userAgentData) {
+        const b = navigator.userAgentData.brands.at(-1);
+        const browser = `${b.brand} ${b.version}`;
+        return {browser, platform: navigator.userAgentData.platform};
+    } else {
+        !!navigator.userAgent.match(/ Mobile[/ ]/);
+        const ua = navigator.userAgent;
+        const platform = ua.match(/Windows NT/) ? 'Windows' :
+            ua.match(/Android/) ? 'Android' :
+            ua.match(/Linux/) ? 'Linux' :
+            ua.match(/Macintosh/) ? 'macOS' :
+            ua.match(/iPad|iPhone/) ? 'iOS' : 'unknown';
+        const b = (/^((?!chrome|android).)*safari/i).test(ua) ? 'Safari' :
+            ua.match(/ Firefox\//) ? 'Firefox' : 
+            ua.match(/ Edg\//) ? 'Microsoft Edge' :
+            ua.match(/ Chrome\//) ? 'Chrome' : 'unknown';
+        let version;
+        if (b === 'Safari') {
+            version = ua.match(/ Version\/([^ ]+)/)[1];
+        } else if (b === 'Firefox') {
+            version = ua.match(/ Firefox\/([^ ]+)/)[1];
+        } else if (b === 'Microsoft Edge') {
+            version = ua.match(/ Edg\/([0-9]+)/)[1];
+        } else if (b === 'Chrome') {
+            version = ua.match(/ Chrome\/([0-9]+)/)[1];
+        }
+        return {browser: version ? `${b} ${version}` : b, platform};
+    };
+}
+
 
 document.documentElement.style.setProperty('--device-pixel-ratio', devicePixelRatio);
 main();
