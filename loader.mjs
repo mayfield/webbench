@@ -101,16 +101,16 @@ async function main() {
     }
 
     function statusUpdate() {
+        const elapsed = (performance.now() - start) / 1000;
+        const mradsStr = `MRads/sec: ${Math.round(comps / 1000000 / elapsed).toLocaleString()}`;
         if (pending) {
-            const elapsed = (performance.now() - start) / 1000;
-            statusEl.textContent = `Pending: ${pending}, Elapsed: ${elapsed.toFixed(1)}s ${Math.round(comps / elapsed).toLocaleString()}`;
+            statusEl.textContent = `Elapsed: ${elapsed.toFixed(1)}s, ${mradsStr}`;
         } else {
             finish = performance.now();
             startEl.disabled = false;
             if (official) {
                 time = finish - start;
-                score = Math.round(1000000000 / time);
-                statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(1)}s, Official Score: ${score.toLocaleString()}`;
+                statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(1)}s, ${mradsStr}, {score.toLocaleString()}`;
                 const dialog = document.querySelector('dialog');
                 dialog.querySelector('.score').textContent = score.toLocaleString();
                 dialog.querySelector('[name="cpu"]').value = localStorage.getItem("last-cpu");
@@ -118,7 +118,7 @@ async function main() {
                 dialog.querySelector('[name="cores"]').value = localStorage.getItem("last-cores") || navigator.hardwareConcurrency || 1;
                 dialog.showModal();
             } else {
-                statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(1)}s`;
+                statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(1)}s, ${mradsStr}`;
             }
         }
         if (!finish) {
