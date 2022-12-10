@@ -1,6 +1,12 @@
 const officialSamples = 200;
 const officialDrawStyle = 'circleout';
 
+
+function humanNumber(n, precision) {
+    return n.toLocaleString(undefined, {minimumFractionDigits: precision, maximumFractionDigits: precision});
+}
+
+
 async function main() {
     const width = 1024;
     const height = 768;
@@ -101,17 +107,17 @@ async function main() {
 
     function statusUpdate() {
         const elapsed = pending ? (performance.now() - start) / 1000 : compTime / 1000;
-        const mradps = Number(((comps / 1000000 / (compTime / 1000)) || 0).toFixed(2));
-        const mradsStr = `Megarads: ${mradps.toLocaleString()} /s`;
+        const mradps = (comps / 1000000 / (compTime / 1000)) || 0;
+        const mradsStr = `Megarads: ${humanNumber(mradps, 2)}/s`;
         if (pending) {
-            statusEl.textContent = `Elapsed: ${elapsed.toFixed(1)}s, ${mradsStr}`;
+            statusEl.textContent = `Elapsed: ${humanNumber(elapsed, 1)}s, ${mradsStr}`;
             setTimeout(() => requestAnimationFrame(statusUpdate), 1 / 10 * 1000);
         } else {
-            statusEl.textContent = `Completed in: ${elapsed.toFixed(1)}s, ${mradsStr}`;
+            statusEl.textContent = `Completed in: ${humanNumber(elapsed, 1)}s, ${mradsStr}`;
             startEl.disabled = false;
             if (official) {
                 const dialog = document.querySelector('dialog');
-                dialog.querySelector('.score').textContent = Number((comps / 1000000 / elapsed).toFixed(2)).toLocaleString();
+                dialog.querySelector('.score').textContent = humanNumber(comps / 1000000 / elapsed, 2);
                 dialog.querySelector('[name="cpu"]').value = localStorage.getItem("last-cpu");
                 dialog.querySelector('[name="notes"]').value = localStorage.getItem("last-notes");
                 dialog.querySelector('[name="cores"]').value = localStorage.getItem("last-cores") ||
