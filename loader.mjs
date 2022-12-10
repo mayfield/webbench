@@ -9,17 +9,14 @@ async function main() {
     const statusEl = document.querySelector('.status');
     const canvas = document.querySelector('canvas');
     const cCtx = canvas.getContext('2d');
-    const frame = cCtx.createImageData(width, height);
     const work = [];
     const workers = [];
     let comps = 0;
+    let compTime = 0;
     let start;
-    let finish;
     let pending = 0;
-    let elapsed = 0;
     let threads = navigator.hardwareConcurrency || 2;
     let samples = officialSamples;
-    let time;
     let official = true;
     let systemId = localStorage.getItem("system-id");
     if (!systemId) {
@@ -39,7 +36,7 @@ async function main() {
     const drawStyleEl = document.querySelector('select[name="drawstyle"]');
     startEl.addEventListener('click', ev => {
         startEl.disabled = true;
-        startBench()
+        startBench();
     });
     const officialEl = document.querySelector('input[name="official"]');
     officialEl.addEventListener('input', ev => {
@@ -67,6 +64,7 @@ async function main() {
         } catch(e) {
             console.error("Failed to get user agent info:", e);
         }
+        debugger;
         await fetch('https://23t1sp28xe.execute-api.us-east-1.amazonaws.com/Release', {
             method: 'POST',
             body: JSON.stringify({
@@ -75,8 +73,8 @@ async function main() {
                 notes,
                 cores,
                 threads,
-                score: comps / 1000000 / elapsed,
-                time,
+                score: comps / 1000000 / (compTime / 1000),
+                time: compTime,
                 samples,
                 ...userAgent,
             })
@@ -88,6 +86,7 @@ async function main() {
             worker.postMessage(work.shift());
         }
         comps += count;
+        compTime = performance.now() - start;
         const frame = cCtx.createImageData(width, height);
         let c = 0;
         for (let i = 0; i < block.length; i += 3) {
@@ -101,29 +100,24 @@ async function main() {
     }
 
     function statusUpdate() {
-        elapsed = (performance.now() - start) / 1000;
+        const elapsed = pending ? (performance.now() - start) / 1000 : compTime / 1000;
         const mradps = Number((comps / 1000000 / elapsed).toFixed(2));
-        const mradsStr = `MRad/s: ${mradps.toLocaleString()}`;
+        const mradsStr = `Megarads: ${mradps.toLocaleString()} /s`;
         if (pending) {
             statusEl.textContent = `Elapsed: ${elapsed.toFixed(1)}s, ${mradsStr}`;
+            setTimeout(() => requestAnimationFrame(statusUpdate), 1 / 10 * 1000);
         } else {
-            finish = performance.now();
+            statusEl.textContent = `Completed in: ${elapsed.toFixed(1)}s, ${mradsStr}`;
             startEl.disabled = false;
             if (official) {
-                time = finish - start;
-                statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(1)}s, ${mradsStr}`;
                 const dialog = document.querySelector('dialog');
                 dialog.querySelector('.score').textContent = Number((comps / 1000000 / elapsed).toFixed(2)).toLocaleString();
                 dialog.querySelector('[name="cpu"]').value = localStorage.getItem("last-cpu");
                 dialog.querySelector('[name="notes"]').value = localStorage.getItem("last-notes");
-                dialog.querySelector('[name="cores"]').value = localStorage.getItem("last-cores") || navigator.hardwareConcurrency || 1;
+                dialog.querySelector('[name="cores"]').value = localStorage.getItem("last-cores") ||
+                    navigator.hardwareConcurrency || 1;
                 dialog.showModal();
-            } else {
-                statusEl.textContent = `Completed in: ${((finish - start) / 1000).toFixed(1)}s, ${mradsStr}`;
             }
-        }
-        if (!finish) {
-            setTimeout(() => requestAnimationFrame(statusUpdate), 1 / 10 * 1000);
         }
     }
 
@@ -175,7 +169,6 @@ async function main() {
             work.sort((a, b) => drawStyle === 'ltr' ? a.x - b.x : b.x - a.x);
         }
         cCtx.clearRect(0, 0, canvas.width, canvas.height);
-        finish = null;
         start = performance.now();
         statusUpdate();
         for (const w of workers) {
@@ -217,7 +210,7 @@ function getAgentInfo() {
             version = ua.match(/ Chrome\/([0-9]+)/)[1];
         }
         return {browser: version ? `${b} ${version}` : b, platform};
-    };
+    }
 }
 
 

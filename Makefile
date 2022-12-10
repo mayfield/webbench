@@ -15,5 +15,8 @@ references:
 	g++ -Wall -O3 -fopenmp references/smallpt.cpp -o smallpt-gcc
 	clang++ -Wall -O3 -fopenmp references/smallpt.cpp -o smallpt-clang
 
+lint:
+	npx eslint *.mjs worker.js
+
 
 .PHONY: references wasm

@@ -1,0 +1,38 @@
+{
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true
+    },
+    "extends": [
+        "eslint:recommended"
+    ],
+    "parserOptions": {
+        "ecmaVersion": 2022
+    },
+    "rules": {
+        "quotes": "off",
+        "no-console": "off",
+        "no-debugger": "off",
+        "linebreak-style": [
+            "error",
+            "unix"
+        ],
+        "semi": [
+            "error",
+            "always"
+        ],
+        "no-unused-vars": [
+            "warn",
+            {
+                "args": "none"
+            }
+        ],
+        "no-constant-condition": [
+            "error",
+            {
+                "checkLoops": false
+            }
+        ]
+    }
+}

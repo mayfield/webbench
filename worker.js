@@ -1,3 +1,5 @@
+/* global importScripts, renderWASM */
+
 importScripts('render.js?_dc=' + Math.random());
 
 
