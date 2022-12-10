@@ -101,7 +101,7 @@ async function main() {
 
     function statusUpdate() {
         const elapsed = pending ? (performance.now() - start) / 1000 : compTime / 1000;
-        const mradps = Number((comps / 1000000 / elapsed).toFixed(2));
+        const mradps = Number(((comps / 1000000 / (compTime / 1000)) || 0).toFixed(2));
         const mradsStr = `Megarads: ${mradps.toLocaleString()} /s`;
         if (pending) {
             statusEl.textContent = `Elapsed: ${elapsed.toFixed(1)}s, ${mradsStr}`;
