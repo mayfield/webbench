@@ -2,3 +2,4 @@ image.ppm
 *.swp
 smallpt-*
 .DS_Store
+node_modules
