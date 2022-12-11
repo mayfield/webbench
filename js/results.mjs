@@ -15,7 +15,7 @@ async function main() {
         const pct = (x.score - minScore) / (maxScore - minScore);
         return `
             <tr class="${x.systemId === systemId ? 'ours' : ''}">
-                <td class="">${humanNumber(i + 1)}</td>
+                <td class="rank">${humanNumber(i + 1)}</td>
                 <td class="cpu">${x.cpu}</td>
                 <td class="cores">${x.cores}</td>
                 <td class="browser">${x.browser || ''}</td>

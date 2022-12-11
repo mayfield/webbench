@@ -70,7 +70,6 @@ async function main() {
         } catch(e) {
             console.error("Failed to get user agent info:", e);
         }
-        debugger;
         await fetch('https://23t1sp28xe.execute-api.us-east-1.amazonaws.com/Release', {
             method: 'POST',
             body: JSON.stringify({
@@ -133,7 +132,7 @@ async function main() {
         threads = Number(threadsEl.value);
         samples = Number(samplesEl.value);
         while (workers.length < threads) {
-            const w = new Worker('worker.js?_dc=' + Math.random());
+            const w = new Worker('/js/worker.js?v=1');
             await new Promise((resolve, reject) => {
                 w.addEventListener('message', ev => {
                     if (ev.data !== 'ready') {

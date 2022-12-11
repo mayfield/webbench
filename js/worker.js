@@ -1,13 +1,13 @@
 /* global importScripts, renderWASM */
 
-importScripts('render.js?_dc=' + Math.random());
+importScripts('/bin/render.js?v=2');
 
 
 let working;
 const workQueue = [];
 let mod;
 
-renderWASM().then(m => {
+renderWASM({locateFile: url => '/bin/' + url}).then(m => {
     mod = m;
     postMessage('ready');
 });

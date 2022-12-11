@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+        <title>Webbench - WASM CPU Benchmark</title>
+
+        <link id="favicon" rel="shortcut icon" href="/images/favicon.png"/>
+        <link rel="stylesheet" href="/css/common.css"/>
+
+        <script type="module" src="/js/bench.mjs"></script>
+
+        <style>
+            canvas {
+                margin: 1em 0;
+                border: 4px solid #3399cc;
+                width: min(100%, calc(1024px / var(--device-pixel-ratio)));
+                background-image: linear-gradient(45deg, purple, gold);
+            }
+
+            .status {
+                margin-top: 0.6em;
+                font-variant: tabular-nums;
+                font-weight: 600;
+            }
+
+            .playground {
+                display: flex;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .playground.disabled {
+                pointer-events: none;
+                opacity: 0.5;
+            }
+        </style>
+    </head>
+    <body>
+        <h3>Justin's WASM Web benchmark</h3>
+        <p>Webbench uses a modified version of <a href="https://www.kevinbeason.com/smallpt">smallpt</a> and the
+            <a href="https://www.kevinbeason.com/smallpt/forward.cpp">non-recursive "forward" patch</a> to benchmark your device.
+            It can compare phones, tablets, desktops, Windows, Linux, FreeBSD, you name it. It also serves as a moderately
+            interesting WASM comparator.  <i>(HINT: Firefox is usually the winner)</i>
+        </p>
+
+        <label>Official mode: <input type="checkbox" name="official" autocomplete="off" checked/> <small><i>(required to submit results)</i></small></label>
+        <label>Threads: <input name="threads" value="2" type="number" min="1"/></label>
+        <div class="playground disabled">
+            <label>Samples per pixel: <input name="samples" value="10" type="number" min="1"/></label>
+            <label>Draw style:
+                <select name="drawstyle">
+                    <option value="circleout">Circle out</option>
+                    <option value="circlein">Circle in</option>
+                    <option value="random">Random</option>
+                    <option value="topdown">Top down</option>
+                    <option value="bottomup">Bottom up</option>
+                    <option value="ltr">Left to right</option>
+                    <option value="rtl">Right to left</option>
+                </select>
+            </label>
+        </div>
+        <input name="start" type="button" value="Start Benchmark">
+        <div class="status"></div>
+        <canvas width="1024" height="768"></canvas>
+        <footer>
+            <a href="https://github.com/mayfield/webbench">GitHub Source</a> |
+            <a href="https://mayfield.github.io/webbench">Official Site</a> |
+            <a href="/pages/results.html">Results</a>
+        </footer>
+    </body>
+    <dialog id="post-result">
+        <main>
+            <h2>Score: <span class="score"></span></h2>
+            <form method="dialog">
+                <b>CPU Type:</b>
+                <input type="text" name="cpu" maxlength="30" placeholder="e.g. AMD 7950X"></input>
+                <br/>
+                <b>Cores:</b>
+                <input type="number" name="cores"></input>
+                <br/>
+                <b>Notes:</b>
+                <input type="text" name="notes" maxlength="40" placeholder="i.e. Overclocking, cooling, etc"></input>
+                <br/>
+                <br/>
+                <footer>
+                    <button value="cancel">Cancel</button>
+                    <button value="post">Post Result</button>
+                </footer>
+            </form>
+        </main>
+    </dialog>
+</html>

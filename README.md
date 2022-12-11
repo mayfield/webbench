@@ -1,7 +1,10 @@
 webbench
 --------
 
-Justin's WASM Web benchmark using a WebWorker threaded version of [smallpt](https://www.kevinbeason.com/smallpt/) ([non-recursive patch](https://www.kevinbeason.com/smallpt/forward.cpp))
+Webbench uses a modified version of [smallpt](https://www.kevinbeason.com/smallpt/) and
+the [non-recursive "forward" patch](https://www.kevinbeason.com/smallpt/forward.cpp) to benchmark your
+device. It can compare phones, tablets, desktops, Windows, Linux, FreeBSD, you name it. It also serves as
+a moderately interesting WASM comparator. *(HINT: Firefox is usually the winner)*
 
 
 Run Benchmark

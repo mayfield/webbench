@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+        <meta name="apple-mobile-web-app-capable" content="yes"/>
+
+        <title>Webbench Results - WASM CPU Benchmark</title>
+
+        <link id="favicon" rel="shortcut icon" href="/images/favicon.png"/>
+        <link rel="stylesheet" href="/css/common.css"/>
+
+        <script type="module" src="/js/results.mjs"></script>
+
+        <style>
+            table.results {
+                margin: 0 1em 2em 1em;
+                background: #222;
+                padding: 1em;
+                border-radius: 0.3em;
+                border-collapse: collapse;
+                overflow: hidden;
+            }
+
+            table.results thead th {
+                background: gold;
+                color: black;
+                font-variant: all-small-caps;
+            }
+
+            table.results th, td {
+                padding: 0.2em 0.5em;
+                text-align: left;
+            }
+
+            table tr:nth-child(even) td {
+                background-color: #0009;
+            }
+
+            table td.rank,
+            table td.score {
+                font-weight: bold;
+            }
+
+            table tr.ours td {
+                background-color: #821332;
+            }
+
+            @media only screen and (max-width: 900px)  {
+                table.results {
+                    margin: 0;
+                    padding: 0;
+                    display: grid;
+                    grid-template-columns: 0.8fr 3fr 0.9fr 3fr 1fr;
+                }
+
+                table.results tr,
+                table.results tbody,
+                table.results thead {
+                    display: contents;
+                }
+
+                table.results th {
+                    font-size: 0.82em;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                table.results td {
+                    display: flex;
+                    align-items: center;
+                    padding-top: 0.6em;
+                }
+
+                table.results th.notes,
+                table.results th.score {
+                    display: none;
+                }
+
+                table.results td.notes,
+                table.results td.score {
+                    grid-column-start: 1;
+                    grid-column-end: 6;
+                    justify-content: space-around;
+                }
+
+                table.results td.notes:not(:empty),
+                table.results td.score:not(:empty) {
+                    padding: 0 0.7em 0.5em 0.7em !important;
+                }
+
+                table.results td.notes:empty,
+                table.results td.score:empty {
+                    padding: 0 !important;
+                }
+
+                table.results td.score progress {
+                    margin-right: 0.5em;
+                    width: calc(100% - 6em);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h3>Justin's WASM Web benchmark</h3>
+        <p>
+            Scores are based on Megarads per second.  One Megarad is a million calls to the
+            <a href="https://github.com/mayfield/webbench/blob/cdd0f692dedf4c2f6b23a01039096957f761a37a/render.cpp#L90-L167">radiance function of smallpt</a>.
+            More is better!
+        </p>
+        <h2>Results...</h2>
+        <table class="results">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>CPU</th>
+                    <th>Cores</th>
+                    <th>Browser</th>
+                    <th>Platform</th>
+                    <th class="notes">Notes</th>
+                    <th class="score">Megarads/s</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="7">Loading</td>
+                </tr>
+            </tbody>
+        </table>
+        <footer>
+            <a href="https://github.com/mayfield/webbench">GitHub Source</a> |
+            <a href="https://mayfield.github.io/webbench">Official Site</a> |
+            <a href="/pages/bench.html">Benchmark</a>
+        </footer>
+    </body>
+</html>
