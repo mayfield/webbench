@@ -132,7 +132,7 @@ async function main() {
         threads = Number(threadsEl.value);
         samples = Number(samplesEl.value);
         while (workers.length < threads) {
-            const w = new Worker('worker.js?v=1');
+            const w = new Worker('../js/worker.js?v=1');
             await new Promise((resolve, reject) => {
                 w.addEventListener('message', ev => {
                     if (ev.data !== 'ready') {
