@@ -36,15 +36,25 @@
                 pointer-events: none;
                 opacity: 0.5;
             }
+
+            img.logo {
+                width: min(10em, 25%);
+                margin: 1em 0.5em 0.5em 0;
+                float: left;
+            }
         </style>
     </head>
     <body>
-        <h3>Justin's WASM Web benchmark</h3>
-        <p>Webbench uses a modified version of <a href="https://www.kevinbeason.com/smallpt">smallpt</a> and the
-            <a href="https://www.kevinbeason.com/smallpt/forward.cpp">non-recursive "forward" patch</a> to benchmark your device.
-            It can compare phones, tablets, desktops, Windows, Linux, FreeBSD, you name it. It also serves as a moderately
-            interesting WASM comparator.  <i>(HINT: Firefox is usually the winner)</i>
-        </p>
+        <header>
+            <img src="/images/logo.webp" class="logo"/>
+            <h3>Justin's WASM Web benchmark</h3>
+            <p>
+                Webbench uses a modified version of <a href="https://www.kevinbeason.com/smallpt">smallpt</a> and the
+                <a href="https://www.kevinbeason.com/smallpt/forward.cpp">non-recursive "forward" patch</a> to benchmark your device.
+                It can compare phones, tablets, desktops, Windows, Linux, FreeBSD, you name it. It also serves as a moderately
+                interesting WASM comparator.  <i>(HINT: Firefox is usually the winner)</i>
+            </p>
+        </header>
 
         <label>Official mode: <input type="checkbox" name="official" autocomplete="off" checked/> <small><i>(required to submit results)</i></small></label>
         <label>Threads: <input name="threads" value="2" type="number" min="1"/></label>
