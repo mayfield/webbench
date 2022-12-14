@@ -13,13 +13,8 @@
         <script type="module" src="/js/results.mjs"></script>
 
         <style>
-            img.logo {
-                width: min(10em, 25%);
-                margin: 1em 0.5em 0.5em 0;
-                float: left;
-            }
-
             table.results {
+                font-size: 0.9em;
                 margin: 0 1em 2em 1em;
                 background: #222;
                 padding: 1em;
@@ -32,6 +27,7 @@
                 background: gold;
                 color: black;
                 font-variant: all-small-caps;
+                border-right: 1px dotted #0003;
             }
 
             table.results th, td {
@@ -46,6 +42,15 @@
             table td.rank,
             table td.score {
                 font-weight: bold;
+            }
+
+            table td.score {
+                white-space: nowrap;
+            }
+
+            table td.notes {
+                font-style: italic;
+                font-weight: 300;
             }
 
             table tr.ours td {
@@ -67,9 +72,8 @@
                 }
 
                 table.results th {
-                    font-size: 0.82em;
+                    font-size: 0.88em;
                     overflow: hidden;
-                    text-overflow: ellipsis;
                 }
 
                 table.results td {
@@ -87,12 +91,15 @@
                 table.results td.score {
                     grid-column-start: 1;
                     grid-column-end: 6;
-                    justify-content: space-around;
+                }
+
+                table.results td.score {
+                    justify-content: space-between;
                 }
 
                 table.results td.notes:not(:empty),
                 table.results td.score:not(:empty) {
-                    padding: 0 0.7em 0.5em 0.7em !important;
+                    padding: 0 0.7em 0.5em 2.8em !important;
                 }
 
                 table.results td.notes:empty,
@@ -102,7 +109,7 @@
 
                 table.results td.score progress {
                     margin-right: 0.5em;
-                    width: calc(100% - 6em);
+                    width: calc(100% - 5em);
                 }
             }
         </style>

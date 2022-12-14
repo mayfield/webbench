@@ -1,16 +1,33 @@
+@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+
+
 html {box-sizing: border-box;}
 *, *::before, *::after {
     box-sizing: inherit;
 }
 
 html {
-    font-family: sans-serif;
+    font-family: "Jost", sans-serif;
     margin: 0;
     padding: 0;
 }
 
 a {
     color: gold;
+}
+
+body > header > h1,
+body > header > h2,
+body > header > h3,
+body > header > h4,
+body > header > h5 {
+    margin-top: 1.5em;
+}
+
+header > img.logo {
+    width: min(10em, 25%);
+    margin: 1em 1em 0.5em 0;
+    float: left;
 }
 
 body {
@@ -33,7 +50,7 @@ input {
 }
 
 input[type="number"] {
-    width: 7ch;
+    width: 8ch;
 }
 
 input[type="button"] {
