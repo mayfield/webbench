@@ -3,9 +3,9 @@ all: wasm references
 
 wasm:
 	em++ -Wall -O3 \
-		-sSTACK_SIZE=8388608 \
-		-sINITIAL_MEMORY=33554432 \
-		-sALLOW_MEMORY_GROWTH=1 \
+		-sSTACK_SIZE=131072 \
+		-sINITIAL_MEMORY=4194304 \
+		-sALLOW_MEMORY_GROWTH=0 \
 		-sEXPORTED_FUNCTIONS=_renderBlock \
 		-sMODULARIZE=1 \
 		-sEXPORT_NAME=renderWASM \
