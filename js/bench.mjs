@@ -3,7 +3,10 @@ const officialDrawStyle = 'circleout';
 
 
 function humanNumber(n, precision) {
-    return n.toLocaleString(undefined, {minimumFractionDigits: precision, maximumFractionDigits: precision});
+    return n.toLocaleString(undefined, {
+        minimumFractionDigits: precision,
+        maximumFractionDigits: precision
+    });
 }
 
 
@@ -132,7 +135,7 @@ async function main() {
         threads = Number(threadsEl.value);
         samples = Number(samplesEl.value);
         while (workers.length < threads) {
-            const w = new Worker('../js/worker.js?v=1');
+            const w = new Worker('../js/worker.js?v=3');
             await new Promise((resolve, reject) => {
                 w.addEventListener('message', ev => {
                     if (ev.data !== 'ready') {

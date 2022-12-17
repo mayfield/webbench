@@ -1,6 +1,6 @@
 /* global importScripts, renderWASM */
 
-importScripts('../bin/render.js?v=2');
+importScripts('../bin/render.js?v=3');
 
 
 let working;
