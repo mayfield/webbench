@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 const os = require('node:os');
 const crypto = require('node:crypto');
 const fetch = require('node-fetch');
