@@ -10,5 +10,9 @@
   "license": "ISC",
   "devDependencies": {
     "eslint": "^8.29.0"
+  },
+  "dependencies": {
+    "argparse": "2.0.1",
+    "node-fetch": "2.6.7"
   }
 }

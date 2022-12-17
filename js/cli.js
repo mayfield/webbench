@@ -1,10 +1,22 @@
 const os = require('node:os');
 const crypto = require('node:crypto');
+const fetch = require('node-fetch');
 const {Worker} = require('node:worker_threads');
 const renderP = require('../bin/render.js');
+const readline = require('node:readline');
+const {ArgumentParser} = require('argparse');
+
+const rl = readline.createInterface({input: process.stdin, output: process.stdout});
+const prompt = query => new Promise(resolve => rl.question(query, resolve));
 
 const officialSamples = 200;
-const officialDrawStyle = 'circleout';
+
+const parser = new ArgumentParser({
+    description: 'WASM based CPU benchmark',
+});
+parser.add_argument('-t', '--threads', {default: os.cpus().length});
+parser.add_argument('-s', '--samples', {default: officialSamples});
+parser.add_argument('-n', '--notes');
 
 
 function humanNumber(n, precision) {
@@ -19,7 +31,7 @@ function systemId() {
 }
 
 
-async function main() {
+async function main(args) {
     const width = 1024;
     const height = 768;
     const bWidth = 32;
@@ -30,9 +42,9 @@ async function main() {
     let compTime = 0;
     let start;
     let pending = 0;
-    let threads = os.cpus().length;
-    let samples = officialSamples;
-    let official = true;
+    let threads = Number(args.threads);
+    let samples = Number(args.samples);
+    const official = samples === officialSamples;
     function onWorkerBlock(worker, {x, y, width, height, block, count}) {
         if (work.length) {
             worker.postMessage(work.shift());
@@ -51,25 +63,30 @@ async function main() {
             setTimeout(() => statusUpdate(), 1 / 4 * 1000);
         } else {
             console.info(`Completed in: ${humanNumber(elapsed, 1)}s, ${mradsStr}`);
-            if (official) {
-                const cpu = os.cpus()[0].model;
-                const cores = os.cpus().length;
-                await fetch('https://23t1sp28xe.execute-api.us-east-1.amazonaws.com/Release', {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        systemId: systemId(),
-                        cpu,
-                        notes: '',
-                        cores,
-                        threads,
-                        score: comps / 1000000 / (compTime / 1000),
-                        time: compTime,
-                        samples,
-                        ...getAgentInfo(),
-                    })
-                });
-            }
+            finish(elapsed, mradps, mradsStr).finally(() => process.exit(0));
         }
+    }
+
+    async function finish() {
+        if (!official || await prompt('Post this result [yes/no]: ') !== 'yes') {
+            return;
+        }
+        const cpu = os.cpus()[0].model;
+        const cores = os.cpus().length;
+        await fetch('https://23t1sp28xe.execute-api.us-east-1.amazonaws.com/Release', {
+            method: 'POST',
+            body: JSON.stringify({
+                systemId: systemId(),
+                cpu,
+                notes: args.notes || '',
+                cores,
+                threads,
+                score: comps / 1000000 / (compTime / 1000),
+                time: compTime,
+                samples,
+                ...getAgentInfo(),
+            })
+        });
     }
 
     comps = 0;
@@ -123,5 +140,4 @@ function getAgentInfo() {
     };
 }
 
-
-main();
+main(parser.parse_args());
