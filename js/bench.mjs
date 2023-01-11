@@ -179,12 +179,14 @@ async function main() {
         cCtx.clearRect(0, 0, canvas.width, canvas.height);
         start = performance.now();
         statusUpdate();
-        for (const w of workers) {
-            const ws = work.shift();
-            if (!ws) {
-                break;
+        for (let i = 0; i < 2; i++) {
+            for (const w of workers) {
+                const ws = work.shift();
+                if (!ws) {
+                    break;
+                }
+                w.postMessage(ws);
             }
-            w.postMessage(ws);
         }
     }
 }
