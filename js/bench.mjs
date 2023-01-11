@@ -194,8 +194,9 @@ async function main() {
 
 function getAgentInfo() {
     if (navigator.userAgentData) {
-        const b = navigator.userAgentData.brands.at(-1);
-        const browser = `${b.brand} ${b.version}`;
+        const brands = navigator.userAgentData.brands.filter(x => !x.brand.match(/^Not/));
+        const b = brands.at(-1);
+        const browser = b ? `${b.brand} ${b.version}` : 'Unknown Browser';
         return {browser, platform: navigator.userAgentData.platform};
     } else {
         !!navigator.userAgent.match(/ Mobile[/ ]/);
