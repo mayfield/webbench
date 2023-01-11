@@ -2,7 +2,7 @@ all: wasm references
 
 
 wasm:
-	em++ -Wall -O3 \
+	em++ -Wall -O3 -fno-rtti -fno-exceptions \
 		-sSTACK_SIZE=131072 \
 		-sINITIAL_MEMORY=4194304 \
 		-sALLOW_MEMORY_GROWTH=1 \
